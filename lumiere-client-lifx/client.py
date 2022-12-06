@@ -92,12 +92,12 @@ def update_lights(lights, colors):
 
     # Go through each light
     for li, light in enumerate(lights):
-        color = shuffled_colors[li % len(shuffled_colors) - 1]
+        light_index = li % len(shuffled_colors)
+        color = shuffled_colors[light_index]
 
         light_response = requests.put(
-            "https://api.lifx.com/v1/lights/all/state",
+            f"https://api.lifx.com/v1/lights/id:{light['id']}/state",
             params={
-                "selector": f'id:{light["id"]}',
                 "color": color,
                 "brightness": brightness,
                 "duration": duration,
