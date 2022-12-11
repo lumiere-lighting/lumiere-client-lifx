@@ -40,7 +40,7 @@ Install the startup/service script.
     - `sudo cp ./deploy/lumiere-client-lifx.init.d /etc/init.d/lumiere-client-lifx && sudo chmod +x /etc/init.d/lumiere-client-lifx`
 - Update the script as needed. Mostly this will just be updating the `dir` variable to point where the code is installed.
 - Install to be able to be run on startup.
-    - `sudo update-rc.d lumiere-client defaults`
+    - `sudo update-rc.d lumiere-client-lifx defaults`
 
 
 
