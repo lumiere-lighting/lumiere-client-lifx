@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides: lumiere-client
+# Provides: lumiere-client-lifx
 # Required-Start:    $network $remote_fs $local_fs
 # Required-Stop:     $network $remote_fs $local_fs
 # Default-Start:     2 3 4 5
