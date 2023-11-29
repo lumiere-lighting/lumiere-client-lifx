@@ -1,10 +1,11 @@
 import logging
-import requests
-from random import shuffle
 from os import getenv
+from random import shuffle
+
+import requests
 import socketio
-from pprint import pprint
 from dotenv import load_dotenv
+from tenacity import after_log, retry, stop_after_attempt, wait_fixed
 
 # Load config
 load_dotenv()
@@ -34,6 +35,11 @@ headers = {
 }
 
 
+@retry(
+    stop=stop_after_attempt(10),
+    wait=wait_fixed(5),
+    after=after_log(logger, logging.DEBUG),
+)
 def main_client():
     # Get all lights
     all_lights = get_all_lights()
