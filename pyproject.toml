@@ -1,0 +1,12 @@
+[project]
+name = "lumiere-client-lifx"
+version = "0.1.0"
+description = "Lumiere community lighting LIFX client in Python"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "python-dotenv>=1.2.1,<2.0.0",
+    "python-socketio[client]>=5.5.0,<6.0.0",
+    "requests>=2.32.5,<3.0.0",
+    "tenacity>=9.1.2,<10.0.0",
+]

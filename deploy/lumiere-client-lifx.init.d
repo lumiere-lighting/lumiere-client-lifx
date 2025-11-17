@@ -12,7 +12,7 @@
 
 # Update dir depending on where installed.
 dir="/home/pi/code/lumiere-client-lifx"
-cmd="python lumiere-client-lifx/client.py"
+cmd="uv run lumiere-client-lifx/client.py"
 user="root"
 
 name=`basename $0`
