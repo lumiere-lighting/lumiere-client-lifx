@@ -36,7 +36,7 @@ headers = {
 
 
 @retry(
-    stop=stop_after_attempt(10),
+    stop=stop_after_attempt(5),
     wait=wait_fixed(5),
     after=after_log(logger, logging.DEBUG),
 )
@@ -84,7 +84,21 @@ def get_all_lights():
 
     lights = lights_response.json()
 
+    # Check issues
+    if lights_response.status_code >= 300:
+        # Not right error
+        raise ValueError(
+            f"Error calling LIFX, response: '{lights_response.status_code}', message: {lights.get('error', 'unknown error')}"
+        )
+
     return lights
+
+
+def get_current_colors():
+    # Get current lumiere lights
+    lumiere_response = requests.get(f"{api_domain}/lights/current")
+    lumiere_lights = lumiere_response.json()
+    return lumiere_lights["results"]["colors"]
 
 
 def update_lights(lights, colors):
@@ -111,8 +125,13 @@ def update_lights(lights, colors):
             headers=headers,
         )
 
-        # TODO: Handle issues
-        # pprint(light_response.json())
+        # Handle issues
+        light_data = light_response.json()
+        if light_response.status_code >= 300:
+            # Not right error
+            raise ValueError(
+                f"Error calling LIFX, response: '{light_response.status_code}', message: {light_data.get('error', 'unknown error')}"
+            )
 
 
 if __name__ == "__main__":
