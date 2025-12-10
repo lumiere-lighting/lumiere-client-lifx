@@ -16,6 +16,7 @@ Utilize environment variables to configure. Optionally put in a `.env` file.
 - `LUMIERE_LIFX_LIGHTS`: [Lifx light selector](https://api.developer.lifx.com/reference/selectors) to update specific lights; defaults to `all`.
 - `LUMIERE_LIFX_BRIGHTNESS`: Brightness to set with lights; should be between 0 and 1; defaults to `0.85`.
 - `LUMIERE_LIFX_DURATION`: Seconds on light transition time; defaults to `1`.
+- `LUMIERE_LIFX_SHUFFLE`: Randomize the order of the lights when displaying.
 - `LOG_LEVEL`: Python [logging level](https://docs.python.org/3/library/logging.html#levels); defaults to `30`.
 
 ## Usage

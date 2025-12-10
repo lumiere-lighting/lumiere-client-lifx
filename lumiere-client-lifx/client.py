@@ -1,3 +1,4 @@
+import json
 import logging
 from os import getenv
 from random import shuffle
@@ -21,6 +22,9 @@ brightness = float(getenv("LUMIERE_LIFX_BRIGHTNESS", 0.85))
 
 # Animation duration
 duration = float(getenv("LUMIERE_LIFX_DURATION", 1))
+
+# Shuffle
+shuffle_lights = bool(getenv("LUMIERE_LIFX_SHUFFLE", False))
 
 # Animation duration
 log_level = int(getenv("LOG_LEVEL", 30))
@@ -91,7 +95,8 @@ def get_all_lights():
             f"Error calling LIFX, response: '{lights_response.status_code}', message: {lights.get('error', 'unknown error')}"
         )
 
-    return lights
+    # Order lights by name
+    return sorted(lights, key=lambda item: item["label"])
 
 
 def get_current_colors():
@@ -105,33 +110,47 @@ def update_lights(lights, colors):
     # TODO: Handle the possibility that there are a larger
     # number of lights and spread like we do in other clients.
 
-    # Unique and randomize colors
-    unique_colors = list(set(colors))
-    shuffle(unique_colors)
-    shuffled_colors = unique_colors
+    # Unique colors
+    unique_colors = list(dict.fromkeys(colors))
 
-    # Go through each light
+    # Shuffle/randomize or use in order
+    if shuffle_lights:
+        shuffle(unique_colors)
+        ordered_colors = unique_colors
+    else:
+        ordered_colors = unique_colors
+
+    # Go through each light and add to payload
+    payload = []
     for li, light in enumerate(lights):
-        light_index = li % len(shuffled_colors)
-        color = shuffled_colors[light_index]
-
-        light_response = requests.put(
-            f"https://api.lifx.com/v1/lights/id:{light['id']}/state",
-            params={
+        light_index = li % len(ordered_colors)
+        color = ordered_colors[light_index]
+        payload.append(
+            {
+                "selector": f"id:{light['id']}",
                 "color": color,
                 "brightness": brightness,
                 "duration": duration,
-            },
-            headers=headers,
+            }
         )
 
-        # Handle issues
-        light_data = light_response.json()
-        if light_response.status_code >= 300:
-            # Not right error
-            raise ValueError(
-                f"Error calling LIFX, response: '{light_response.status_code}', message: {light_data.get('error', 'unknown error')}"
-            )
+    # Make ccall to update all lights
+    payload = {
+        "states": payload,
+    }
+    light_response = requests.put(
+        "https://api.lifx.com/v1/lights/states",
+        data=json.dumps(payload),
+        headers=headers,
+    )
+
+    # Handle issues
+    light_data = light_response.json()
+    if light_response.status_code >= 300:
+        # Not right error
+        raise ValueError(
+            f"Error calling LIFX, response: '{light_response.status_code}', message: {light_data.get('error', 'unknown error')}"
+        )
 
 
 if __name__ == "__main__":
